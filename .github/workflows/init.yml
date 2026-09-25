@@ -1,0 +1,34 @@
+name: Setup Flutter Project
+
+on:
+  workflow_dispatch:
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.19.0'
+          channel: 'stable'
+
+      - name: Generate Flutter App
+        run: |
+          flutter create --org com.primearenabd --project-name prime_arena_bd app_temp
+          shopt -s dotglob
+          mv app_temp/* .
+          rm -rf app_temp
+
+      - name: Commit and Push
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m "Auto initialize Flutter project for Prime Arena BD" || echo "No changes"
+          git push
